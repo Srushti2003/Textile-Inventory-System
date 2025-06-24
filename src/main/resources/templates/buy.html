@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Buy Products - Customer Order Form</title>
+    <style>
+        body {
+            background-color: #F8F9FA;
+            font-family: 'Segoe UI', sans-serif;
+            color: #212529;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #006D77;
+            color: white;
+            padding: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .container {
+            padding: 40px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        h2 {
+            color: #006D77;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        label {
+            font-weight: 600;
+            display: block;
+            margin: 10px 0 6px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #83C5BE;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #006D77;
+            box-shadow: 0 0 5px rgba(0,109,119,0.3);
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 15px;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: center;
+        }
+
+        th {
+            background-color: #83C5BE;
+            color: #212529;
+        }
+
+        .btn {
+            background-color: #006D77;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            margin-top: 15px;
+        }
+
+        .btn:hover {
+            background-color: #004E56;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            background-color: #DC3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .action-btn:hover {
+            background-color: #b52b38;
+        }
+
+        footer {
+            background-color: #f1f1f1;
+            text-align: center;
+            padding: 10px;
+            color: #495057;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<!-- Keep same <head> and <style> section -->
+
+<body>
+
+<header>Textile Inventory System</header>
+
+<div class="container">
+    <h2>Place Product Order (Customer → Company)</h2>
+
+    <form action="/purchase-order" method="post" id="buyForm">
+
+        <!-- PurchaseOrder fields -->
+        <label for="customerId">Customer (Manufacturer):</label>
+        <select name="purchaseOrder.customerId" id="customerId" required>
+            <option value="">Select Customer</option>
+            <th:block th:each="cust : ${customers}">
+                <option th:value="${cust.cust_id}" th:text="${cust.customerName}"></option>
+            </th:block>
+        </select>
+
+
+
+        <label for="orderDate">Order Date:</label>
+        <input type="date" id="orderDate" name="purchaseOrder.orderDate" required>
+
+        <!-- PurchaseOrderItem list -->
+        <table id="itemTable">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Item Code</th>
+                <th>Description</th>
+                <th>Unit</th>
+                <th>Rate</th>
+                <th>Quantity</th>
+                <th>Remarks</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody id="itemBody">
+            <!-- Item rows added dynamically -->
+            </tbody>
+        </table>
+
+        <button type="button" onclick="addRow()" class="btn">+ Add Item</button>
+        <br><br>
+
+        <button type="submit" class="btn">Submit Order</button>
+    </form>
+</div>
+
+<footer>&copy; 2025 Textile Inventory Management</footer>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+        let items = /*[[${items}]]*/ [];
+    /*]]>*/
+</script>
+
+<script>
+    let rowCount = 0;
+
+    // Convert items list into itemMap for fast lookup
+    const itemMap = {};
+    items.forEach(item => {
+        itemMap[item.itemCode] = {
+            description: item.description,
+            unit: item.unit,
+            rate: item.rate
+        };
+    });
+
+    function addRow() {
+        const tbody = document.getElementById("itemBody");
+
+        const row = document.createElement("tr");
+        row.setAttribute("id", "row" + rowCount);
+
+        // Create options dynamically
+        let options = `<option value="">Select</option>`;
+        for (const code in itemMap) {
+            options += `<option value="${code}">${code}</option>`;
+        }
+
+        row.innerHTML = `
+            <td>${rowCount + 1}</td>
+            <td>
+                <select name="purchaseOrderItems[${rowCount}].itemCode" onchange="fillDetails(this, ${rowCount})" required>
+                    ${options}
+                </select>
+            </td>
+            <td><input type="text" name="purchaseOrderItems[${rowCount}].description" id="desc${rowCount}" readonly></td>
+            <td><input type="text" name="purchaseOrderItems[${rowCount}].unit" id="unit${rowCount}" readonly></td>
+            <td><input type="number" step="0.01" name="purchaseOrderItems[${rowCount}].rate" id="rate${rowCount}" placeholder="Rate" required></td>
+            <td><input type="number" name="purchaseOrderItems[${rowCount}].quantity" required></td>
+            <td><input type="text" name="purchaseOrderItems[${rowCount}].remarks"></td>
+            <td><button type="button" onclick="removeRow(${rowCount})" class="action-btn">Delete</button></td>
+        `;
+
+        tbody.appendChild(row);
+        rowCount++;
+    }
+
+    function removeRow(index) {
+        const row = document.getElementById("row" + index);
+        if (row) {
+            row.remove();
+        }
+    }
+
+    function fillDetails(selectObj, index) {
+        const code = selectObj.value;
+        if (itemMap[code]) {
+            document.getElementById("desc" + index).value = itemMap[code].description;
+            document.getElementById("unit" + index).value = itemMap[code].unit;
+            document.getElementById("rate" + index).value = itemMap[code].rate;
+        } else {
+            document.getElementById("desc" + index).value = "";
+            document.getElementById("unit" + index).value = "";
+            document.getElementById("rate" + index).value = "";
+        }
+    }
+
+    // Add a row by default on page load
+    window.onload = addRow;
+</script>
+
+
+<script th:if="${showAlert}">
+    alert("✅ Order placed successfully!");
+</script>
+
+</body>
+</html>
+
+</html>

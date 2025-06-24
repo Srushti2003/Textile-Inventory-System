@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Item</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f9f9f9;
+            padding: 20px;
+        }
+
+        h2 {
+            color: #006D77;
+        }
+
+        form {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: auto;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #006D77;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #004E56;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Edit Item</h2>
+
+<form th:action="@{/items/update}" th:object="${item}" method="post">
+    <input type="hidden" th:field="*{bin_no}"/>
+
+    <label>Item Code</label>
+    <input type="text" th:field="*{itemCode}" required/>
+
+    <label>Description</label>
+    <input type="text" th:field="*{description}" required/>
+
+    <label>Additional Description</label>
+    <input type="text" th:field="*{add_description}"/>
+
+    <label>Category</label>
+    <input type="text" th:field="*{category}"/>
+
+    <label>HSN No</label>
+    <input type="text" th:field="*{hsn_no}"/>
+
+    <label>Unit</label>
+    <input type="text" th:field="*{unit}"/>
+
+    <label>Opening Balance</label>
+    <input type="number" th:field="*{openingBalance}" step="0.01"/>
+
+    <label>Closing Balance</label>
+    <input type="number" th:field="*{closingBalance}" step="0.01"/>
+
+    <label>Reorder Level</label>
+    <input type="number" th:field="*{reorder_level}"/>
+
+    <label>Class</label>
+    <input type="text" th:field="*{c_lass}"/>
+
+    <label>Rate</label>
+    <input type="number" th:field="*{rate}" step="0.01"/>
+
+    <label>GST (%)</label>
+    <input type="number" th:field="*{gst}" step="0.01"/>
+
+    <label>Vendor</label>
+    <input type="text" th:field="*{vendor}"/>
+
+    <label>Type</label>
+    <input type="text" th:field="*{type}"/>
+
+    <button type="submit">Update Item</button>
+</form>
+
+</body>
+</html>

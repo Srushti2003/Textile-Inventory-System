@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Customer List</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+        }
+        th {
+            background-color: #006D77;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Customer List</h2>
+<div th:if="${param.updated}">
+    <script>
+        alert("Customer updated successfully!");
+    </script>
+</div>
+
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>City</th>
+        <th>State</th>
+        <th>Mobile No</th>
+        <th>Email</th>
+        <th>Actions</th> <!-- New column -->
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="customer : ${customers}">
+        <td th:text="${customer.cust_id}">1</td>
+        <td th:text="${customer.customerName}">John Doe</td>
+        <td th:text="${customer.city}">Mumbai</td>
+        <td th:text="${customer.state}">Maharashtra</td>
+        <td th:text="${customer.mobile}">9999999999</td>
+        <td th:text="${customer.email}">john@example.com</td>
+        <td>
+            <a th:href="@{'/customers/edit/' + ${customer.cust_id}}" style="margin-right:10px; color:blue;">✏️ Update</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+
+</body>
+</html>

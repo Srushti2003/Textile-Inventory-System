@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Item List</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 20px;
+            background-color: #f9f9f9;
+        }
+
+        h2 {
+            color: #006D77;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: white;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #006D77;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .action-buttons a {
+            margin-right: 10px;
+            text-decoration: none;
+            color: #007BFF;
+            font-weight: bold;
+        }
+
+        .action-buttons a:hover {
+            color: #004E56;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Item List</h2>
+<div th:if="${param.updated}">
+    <script>
+        alert("Item updated successfully!");
+    </script>
+</div>
+
+<table>
+    <thead>
+    <tr>
+        <th>Bin No</th>
+        <th>Category</th>
+        <th>HSN No</th>
+        <th>Item Code</th>
+        <th>Description</th>
+        <th>Unit</th>
+        <th>Open Bal</th>
+        <th>Close Bal</th>
+        <th>Reorder Level</th>
+        <th>Rate</th>
+        <th>GST %</th>
+        <th>Vendor</th>
+        <th>Type</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="item : ${items}">
+        <td th:text="${item.bin_no}">BIN001</td>
+        <td th:text="${item.category}">Fabric</td>
+        <td th:text="${item.hsn_no}">5407</td>
+        <td th:text="${item.itemCode}">D N 1758</td>
+        <td th:text="${item.description}">Printed Rayon</td>
+        <td th:text="${item.unit}">MTR</td>
+        <td th:text="${item.openingBalance}">100</td>
+        <td th:text="${item.closingBalance}">80</td>
+        <td th:text="${item.reorder_level}">10</td>
+        <td th:text="${item.rate}">250</td>
+        <td th:text="${item.gst}">5</td>
+        <td th:text="${item.vendor}">VendorX</td>
+        <td th:text="${item.type}">Stock</td>
+        <td class="action-buttons">
+            <a th:href="@{'/items/edit/' + ${item.bin_no}}">✏️ Update</a>
+            <a th:href="@{'/items/delete/' + ${item.bin_no}}"
+               onclick="return confirm('Are you sure you want to delete this item?')">🗑️ Delete</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

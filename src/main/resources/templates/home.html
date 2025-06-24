@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard | Textile Inventory</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #F8F9FA;
+        }
+
+        header {
+            background-color: #006D77;
+            color: white;
+            padding: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .layout {
+            display: flex;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #004E56;
+            min-height: calc(100vh - 70px);
+            padding: 20px;
+            color: white;
+        }
+
+        .sidebar a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 6px;
+            background-color: #006D77;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .sidebar a:hover {
+            background-color: #83C5BE;
+            color: #004E56;
+        }
+
+        .content {
+            flex: 1;
+            padding: 40px;
+            width: 1100px;
+        }
+
+        .chart-container {
+            margin-bottom: 40px;
+        }
+
+        canvas {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        footer {
+            background-color: #f1f1f1;
+            text-align: center;
+            padding: 10px;
+            color: #495057;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<header>Textile Inventory System</header>
+
+<div class="layout">
+    <div class="layout">
+        <div class="sidebar" >
+                <div>
+                    <a href="javascript:void(0)" onclick="toggleSubMenu('custMenu')">Manage Customers ⬇</a>
+                    <div id="custMenu" style="display: none; margin-left: 10px;">
+                        <a href="/customers" style="background-color: #045B62;">➕ Add Customer</a>
+                        <a href="/customers/show" style="background-color: #045B62;">📋 Show Customers</a>
+                    </div>
+                </div>
+
+                <div>
+                    <a href="javascript:void(0)" onclick="toggleSubMenu('itemMenu')">Manage Items ⬇</a>
+                    <div id="itemMenu" style="display: none; margin-left: 10px;">
+                        <a href="/items" style="background-color: #045B62;">➕ Add Item</a>
+                        <a href="/items/show" style="background-color: #045B62;">📋 Show Items</a>
+                    </div>
+                </div>
+
+                <a href="/buy">🛒 Buy Products</a>
+        </div>
+
+
+        <div class="content">
+        <h2>📊 Dashboard</h2>
+
+            <form th:action="@{/}" method="get">
+                <label for="year" style="font-weight: bold;">Select Year for Monthly Sales:</label>
+                <select id="year" name="year" onchange="this.form.submit()">
+                    <option th:each="y : ${years}"
+                            th:value="${y}"
+                            th:text="${y}"
+                            th:selected="${y} == ${selectedYear}">
+                    </option>
+                </select>
+            </form>
+
+<!--            <p>Selected Year: <span th:text="${selectedYear}"></span></p>-->
+
+
+            <div class="chart-container">
+            <h3>Total Sales Amount (by Month for <span th:text="${selectedYear}"></span>)</h3>
+            <canvas id="salesChart" height="100"></canvas>
+        </div>
+
+        <div class="chart-container">
+            <h3>Total Sales Amount (by Year)</h3>
+            <canvas id="salesByYearChart" height="100"></canvas>
+        </div>
+
+        <div class="chart-container">
+            <h3>Top Selling Items</h3>
+            <canvas id="itemChart" height="100"></canvas>
+        </div>
+
+        <div class="chart-container">
+            <h3>Quantity Sold by Customer</h3>
+            <canvas id="customerChart" height="100"></canvas>
+        </div>
+
+        </div>
+</div>
+
+<footer>&copy; 2025 Textile Inventory Management</footer>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+
+    const salesData = /*[[${salesData}]]*/ [];
+    const customerStats = /*[[${customerStats}]]*/ [];
+    const itemStats = /*[[${itemStats}]]*/ [];
+    const salesByYear = /*[[${salesByYear}]]*/ [];
+
+    console.log("salesData: ", salesData);
+    console.log("customerStats: ", customerStats);
+    console.log("itemStats: ", itemStats);
+    console.log("salesByYear: ", salesByYear);
+
+
+    // Sales Chart
+    const ctx1 = document.getElementById('salesChart').getContext('2d');
+    new Chart(ctx1, {
+        type: 'line',
+        data: {
+            labels: salesData.map(d => {
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    return monthNames[d.month - 1]; // d.month is 1-based
+}),
+
+            datasets: [{
+                label: 'Total Amount ₹',
+                data: salesData.map(d => d.totalAmount),
+                borderColor: '#006D77',
+                backgroundColor: '#83C5BE',
+                fill: true,
+                tension: 0.3
+            }]
+        }
+    });
+
+    // Sales By Year Chart
+    const ctxSalesByYear = document.getElementById('salesByYearChart').getContext('2d');
+    new Chart(ctxSalesByYear, {
+        type: 'bar',
+        data: {
+            labels: salesByYear.map(d => d.year),
+            datasets: [{
+                label: 'Total Amount ₹',
+                data: salesByYear.map(d => d.totalAmount),
+                backgroundColor: '#004E56'
+            }]
+        }
+    });
+
+    // Item Chart
+    const ctx2 = document.getElementById('itemChart').getContext('2d');
+    new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: itemStats.map(d => d.item),
+            datasets: [{
+                label: 'Qty Sold',
+                data: itemStats.map(d => d.qty),
+                backgroundColor: '#006D77'
+            }]
+        }
+    });
+
+    // Customer Chart
+    const ctx3 = document.getElementById('customerChart').getContext('2d');
+    new Chart(ctx3, {
+        type: 'bar',
+        data: {
+            labels: customerStats.map(d => d.customer),
+            datasets: [{
+                label: 'Qty Purchased',
+                data: customerStats.map(d => d.qty),
+                backgroundColor: '#83C5BE'
+            }]
+        }
+    });
+
+    /*]]>*/
+</script>
+<script>
+    function toggleSubMenu(id) {
+        const el = document.getElementById(id);
+        el.style.display = el.style.display === 'none' ? 'block' : 'none';
+    }
+</script>
+
+
+</body>
+</html>

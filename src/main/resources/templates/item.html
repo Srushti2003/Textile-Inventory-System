@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Item</title>
+    <style>
+        body {
+            background-color: #F8F9FA;
+            font-family: 'Segoe UI', sans-serif;
+            color: #212529;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #006D77;
+            color: white;
+            padding: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .container {
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h2 {
+            color: #006D77;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .card {
+            background-color: white;
+            border: 1px solid #83C5BE;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        label {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        input {
+            padding: 10px;
+            border: 1px solid #83C5BE;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #006D77;
+            box-shadow: 0 0 5px rgba(0,109,119,0.3);
+        }
+
+        button {
+            grid-column: span 2;
+            margin-top: 20px;
+            padding: 12px;
+            font-size: 16px;
+            background-color: #006D77;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #004E56;
+        }
+
+        footer {
+            background-color: #f1f1f1;
+            text-align: center;
+            padding: 10px;
+            color: #495057;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+            font-size: 14px;
+        }
+        .success-message {
+        background-color: #DFF6ED;        /* Light teal background */
+        color: #006D77;                   /* Deep teal text */
+        border: 1px solid #83C5BE;        /* Border to match the theme */
+        padding: 12px 20px;
+        margin: 20px 0;
+        border-radius: 6px;
+        font-weight: 600;
+        text-align: center;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    </style>
+</head>
+<body>
+<header>Textile Inventory System</header>
+<div id="successMsg" class="success-message" style="display:none;">
+    Item Added successfully!
+</div>
+<div class="container">
+    <h2>Add New Item</h2>
+    <div class="card">
+        <form action="/items" method="post">
+            <label for="bin_no">BIN No</label>
+            <input type="text" name="bin_no" id="bin_no" required>
+
+            <label for="category">Category</label>
+            <input type="text" name="category" id="category">
+
+            <label for="hsn_no">HSN No</label>
+            <input type="text" name="hsn_no" id="hsn_no">
+
+            <label for="itemCode">Item Code</label>
+            <input type="text" name="itemCode" id="itemCode">
+
+            <label for="description">Description</label>
+            <input type="text" name="description" id="description">
+
+            <label for="add_description">Additional Description</label>
+            <input type="text" name="add_description" id="add_description">
+
+            <label for="unit">Unit (e.g. MTR)</label>
+            <input type="text" name="unit" id="unit">
+
+            <label for="openingBalance">Opening Balance</label>
+            <input type="number" step="0.01" name="openingBalance" id="openingBalance">
+
+            <label for="closingBalance">Closing Balance</label>
+            <input type="number" step="0.01" name="closingBalance" id="closingBalance">
+
+            <label for="reorder_level">Reorder Level</label>
+            <input type="number" name="reorder_level" id="reorder_level">
+
+            <label for="c_lass">Class</label>
+            <input type="text" name="c_lass" id="c_lass">
+
+            <label for="rate">Rate</label>
+            <input type="number" step="0.01" name="rate" id="rate">
+
+            <label for="gst">GST %</label>
+            <input type="number" step="0.01" name="gst" id="gst">
+
+            <label for="vendor">Vendor</label>
+            <input type="text" name="vendor" id="vendor">
+
+            <label for="type">Type</label>
+            <input type="text" name="type" id="type">
+
+            <button type="submit">Save Item</button>
+        </form>
+    </div>
+</div>
+<footer>&copy; 2025 Textile Inventory Management</footer>
+<script>
+    if (window.location.search.includes('success')) {
+        document.getElementById('successMsg').style.display = 'block';
+    }
+</script>
+</body>
+</html>
